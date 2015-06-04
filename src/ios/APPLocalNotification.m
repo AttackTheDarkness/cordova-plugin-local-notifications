@@ -391,9 +391,12 @@
             notifications = [self.app localNotificationOptionsByType:type
                                                                andId:ids];
         }
-
+        
+        // ensure updatedAt entries are removed from notification dictionaries
+        NSArray* sanitized = [self sanitizedArrayForJsonSerialization:notifications];
+        
         result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK
-                                    messageAsDictionary:notifications[0]];
+                                    messageAsDictionary:sanitized[0]];
 
         [self.commandDelegate sendPluginResult:result
                                     callbackId:command.callbackId];
@@ -430,12 +433,39 @@
                                                                andId:ids];
         }
 
+        // ensure updatedAt entries are removed from notification dictionaries
+        NSArray* sanitized = [self sanitizedArrayForJsonSerialization:notifications];
+        
         result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK
-                                    messageAsArray:notifications];
+                                    messageAsArray:sanitized];
 
         [self.commandDelegate sendPluginResult:result
                                     callbackId:command.callbackId];
     }];
+}
+
+/**
+ * Ensures to UserInfo dictionaries don't have the updatedAt key.  Call this
+ * when you need to return a collection of UserInfo dictionaries but aren't
+ * using this plugin's JSON serialization routine.
+ *
+ * @param userInfoArray
+ *      Array containing UserInfo dictionaries from local notifications
+ */
+- (NSArray *) sanitizedArrayForJsonSerialization:(NSArray*)userInfoArray {
+    NSMutableArray *result = [NSMutableArray array];
+    for (NSDictionary* userInfo in userInfoArray)
+    {
+        if ([userInfo objectForKey:@"updatedAt"]) {
+            NSMutableDictionary *mutableVersion = [userInfo mutableCopy];
+            [mutableVersion removeObjectForKey:@"updatedAt"];
+            [result addObject:mutableVersion];
+        }
+        else {
+            [result addObject:userInfo];
+        }
+    }
+    return result;
 }
 
 /**
