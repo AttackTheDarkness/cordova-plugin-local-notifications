@@ -537,8 +537,10 @@ public class LocalNotification extends CordovaPlugin {
         String js = "cordova.plugins.notification.local.core.fireEvent(" +
                 "\"" + event + "\"," + params + ")";
 		
-		if( LocalNotification.webView != null ) {
+		if( deviceready ) {
 			LocalNotification.webView.sendJavascript(js);
+		} else {
+			eventQueue.add( js );
 		}
     }
 
