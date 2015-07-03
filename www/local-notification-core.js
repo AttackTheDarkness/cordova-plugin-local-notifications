@@ -63,22 +63,17 @@ exports.setDefaults = function (newDefaults) {
  *      The scope for the callback function
  */
 exports.schedule = function (opts, callback, scope) {
-    this.registerPermission(function(granted) {
 
-        if (!granted)
-            return;
+    var notifications = Array.isArray(opts) ? opts : [opts];
 
-        var notifications = Array.isArray(opts) ? opts : [opts];
+    for (var i = 0; i < notifications.length; i++) {
+        var properties = notifications[i];
 
-        for (var i = 0; i < notifications.length; i++) {
-            var properties = notifications[i];
+        this.mergeWithDefaults(properties);
+        this.convertProperties(properties);
+    }
 
-            this.mergeWithDefaults(properties);
-            this.convertProperties(properties);
-        }
-
-        this.exec('schedule', notifications, callback, scope);
-    }, this);
+	this.exec('schedule', notifications, callback, scope);
 };
 
 /**
