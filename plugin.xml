@@ -23,8 +23,8 @@
     </engines>
 
     <!-- dependencies -->
-    <dependency id="cordova-plugin-device" url="https://github.com/lcoling/cordova-plugin-device.git"  />
-
+	<dependency id="cordova-plugin-device"  />
+    
     <!-- info -->
     <info>
         Your support is needed. If you use the local-notification plugin please support us in order to ensure further development.
